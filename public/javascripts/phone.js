@@ -14,22 +14,6 @@ const isAllowedCode = (event) => {
     );
 };
 
-export const handleKeyDown = (event) => {
-  const { key } = event;
-
-  // Ignore all keydown events that are part of composition
-  if (event.isComposing || event.keyCode === 229) {
-    return;
-  }
-
-  // Allowed - length limit
-  const allowedLength = event.target.value.length < 14;
-
-  if (!isAllowedCode(event) && (!isNumeric(key) || !allowedLength)) {
-    event.preventDefault();
-  }
-};
-
 const formatPhone = (value) => {
   const digits = (value.match(/\d+/g)||[]).join('');
   const size = digits.length;
@@ -50,31 +34,47 @@ const formatPhone = (value) => {
   return format;
 };
 
+const setPosition = (element, start) => {
+  window.requestAnimationFrame(() => {
+    element.setSelectionRange(start, start);
+  });
+};
+
+const repositionStart = (input, format, start) => {
+
+  if (start<=1 && format.length > 3) return 1;
+
+  const noDigits = (input.slice(0, start).match(/\D/g) || []).length;
+  const numPosition = start - noDigits;
+  let count = 0;
+  let i;
+
+  for (i=0; i<format.length && count<numPosition; i++) {
+    if (isNumeric(format[i])) {
+      count++;
+    }
+  }
+  return i;
+};
+
+export const handleKeyDown = (event) => {
+  const { key } = event;
+
+  // Ignore all keydown events that are part of composition
+  if (event.isComposing || event.keyCode === 229) {
+    return;
+  }
+
+  // Allowed - length limit
+  const allowedLength = event.target.value.length < 14;
+
+  if (!isAllowedCode(event) && (!isNumeric(key) || !allowedLength)) {
+    event.preventDefault();
+  }
+};
+
 export const handleKeyUp = (event) => {
   const { target: element} = event;
-
-  const setPosition = (element, start) => {
-    window.requestAnimationFrame(() => {
-      element.setSelectionRange(start, start);
-    });
-  };
-
-  const repositionStart = (input, format, start) => {
-
-    if (start<=1 && format.length > 3) return 1;
-
-    const noDigits = (input.slice(0, start).match(/\D/g) || []).length;
-    const numPosition = start - noDigits;
-    let count = 0;
-    let i;
-
-    for (i=0; i<format.length && count<numPosition; i++) {
-      if (isNumeric(format[i])) {
-        count++;
-      }
-    }
-    return i;
-  };
 
   // Preserve element values
   let start = element.selectionStart;

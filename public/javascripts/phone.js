@@ -79,14 +79,13 @@ export const handleKeyUp = (event) => {
   // Preserve element values
   let start = element.selectionStart;
   const elementValue = element.value;
-  const valueLength = elementValue.length;
 
   // Change element value
   const format = formatPhone(elementValue);
   event.target.value = format;
 
   // Handle caret position after changing the element value
-  if (valueLength !== start || element.selectionStart !== start){
+  if (elementValue.length !== start || element.selectionStart !== start){
     if (elementValue !== format) {
       start = repositionStart(elementValue, format, start);
       setPosition(element, start);

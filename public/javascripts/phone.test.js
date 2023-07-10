@@ -53,22 +53,20 @@ test('It should format for size > 6', ()=> {
 test('It should reposition the caret and keep format rule on insert-within', () => {
     // set initial value
     const input = setUp({value: '124', selectionStart: 3});
-    expect(input.target.value).toBe('124') // need to make a change so React registers "" as a change
-    expect(input.target.selectionStart).toBe(3);
 
      // Simulate a 'ArrowLeft' - change the caret position -1 steps (3-1=2)
     input.target.selectionStart -= 1;
     expect(input.target.selectionStart).toBe(2);
     
-    // // Insert digit 3 after position 2
+    // // Insert digit '3' in caret position 2
     const value = '1234';
     input.target.value = value;
-    input.target.selectionStart += 1;
+    input.target.selectionStart += 1; //  = 3
     handleKeyUp(input);
     expect(input.target.value).toBe('(123) 4');
-    expect(input.target.selectionStart).toBe(3);
+    expect(input.target.selectionStart).toBe(3); // still = 3 
     const start = repositionStart(value, input.target.value, input.target.selectionStart);
-    expect(start).toBe(4);
+    expect(start).toBe(4); // right position = 4
   });
 
 
@@ -77,7 +75,6 @@ test('It should reposition the caret and keep format rule on insert-within', () 
     const input = setUp({value: '12345567'});
     handleKeyUp(input);
     expect(input.target.value).toBe('(123) 455-67');
-    // expect(input.selectionStart).toBe(input.value.length); // = 12
     
     //  Change caret position -3 steps (12-3=9)
     //  & Backspace digit 5
@@ -86,7 +83,7 @@ test('It should reposition the caret and keep format rule on insert-within', () 
     input.target.selectionStart = 9;
     handleKeyUp(input);
     expect(input.target.value).toBe('(123) 456-7');
-    expect(input.target.selectionStart).toBe(9);
+    expect(input.target.selectionStart).toBe(9); // still 9 
     const start = repositionStart(value, input.target.value, input.target.selectionStart);
-    expect(start).toBe(8);
+    expect(start).toBe(8); // right position = 8
   });

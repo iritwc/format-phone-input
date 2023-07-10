@@ -1,10 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import {handleKeyDown, handleKeyUp} from './phone';
-
-// const eventTarget = document.getElementById("phone");
-
+import {repositionStart, handleKeyDown, handleKeyUp} from './phone';
 
 const mockFn = jest.fn(_=> true);   
 
@@ -24,11 +21,9 @@ test('It should Not allow letters as inputs, rather allow digits', ()=>{
     expect(input.target.value).toBe(''); // before
     handleKeyDown(input);
     expect(input.target.value).toBe(''); // after
-    console.log(input.preventDefault.mock.calls);
     expect(input.preventDefault).toHaveBeenCalled(); // after
 
     const inputDigit = setUp({key: '1'});  
-    // console.log(inputDigit.preventDefault.mock.calls);
     expect(inputDigit.preventDefault.mock.calls).toHaveLength(1);
     expect(inputDigit.preventDefault.mock.calls[0]).toHaveLength(0);
 });
@@ -56,36 +51,42 @@ test('It should format for size > 6', ()=> {
 });
 
 test('It should reposition the caret and keep format rule on insert-within', () => {
-    const input = setUp({value: '124', selectionStart: 3});
     // set initial value
-    // fireEvent.change(input, {target: {value: '124'}});
+    const input = setUp({value: '124', selectionStart: 3});
     expect(input.target.value).toBe('124') // need to make a change so React registers "" as a change
     expect(input.target.selectionStart).toBe(3);
 
      // Simulate a 'ArrowLeft' - change the caret position -1 steps (3-1=2)
     input.target.selectionStart -= 1;
-    handleKeyUp(input);
     expect(input.target.selectionStart).toBe(2);
-     
-    // // Insert digit (4) in previous position (2)
-    input.target.value = '1234';
+    
+    // // Insert digit 3 after position 2
+    const value = '1234';
+    input.target.value = value;
+    input.target.selectionStart += 1;
     handleKeyUp(input);
     expect(input.target.value).toBe('(123) 4');
+    expect(input.target.selectionStart).toBe(3);
+    const start = repositionStart(value, input.target.value, input.target.selectionStart);
+    expect(start).toBe(4);
   });
 
 
   test('It should reposition the caret and keep format rule on a delete-within', () => {
+     // set initial value
     const input = setUp({value: '12345567'});
-    // set initial value
     handleKeyUp(input);
     expect(input.target.value).toBe('(123) 455-67');
     // expect(input.selectionStart).toBe(input.value.length); // = 12
     
     //  Change caret position -3 steps (12-3=9)
     //  & Backspace digit 5
-    input.target.value = '(123) 45-67';
+    const value = '(123) 45-67';
+    input.target.value = value;
     input.target.selectionStart = 9;
     handleKeyUp(input);
     expect(input.target.value).toBe('(123) 456-7');
-    // expect(input.target.selectionStart).toBe(8);
+    expect(input.target.selectionStart).toBe(9);
+    const start = repositionStart(value, input.target.value, input.target.selectionStart);
+    expect(start).toBe(8);
   });

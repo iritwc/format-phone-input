@@ -2,7 +2,7 @@ const ALLOWED_KEYS = ["Shift", "Home", "End", "Backspace", "Tab", "Enter", "Dele
 const ALLOWED_CODES = ["KeyA", "KeyV", "KeyC", "KeyX", "KeyZ"];
 
 // Allowed - numeric codes
-export const isNumeric = (key) => (/^[0-9]$/).test(key);
+const isNumeric = (key) => (/^[0-9]$/).test(key);
 
 // Allowed - some other codes
 const isAllowedCode = (event) => {
@@ -40,7 +40,7 @@ const setPosition = (element, start) => {
   });
 };
 
-const repositionStart = (input, format, start) => {
+export const repositionStart = (input, format, start) => {
 
   if (start<=1 && format.length > 3) return 1;
 

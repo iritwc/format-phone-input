@@ -49,3 +49,7 @@ You may also see any lint errors in the console.
 ### `npm test`
 
 This project is using Jest for unit testing.
+
+* The purpose of the project is to preserve or share this functionality rather than deploy it.
+
+ThanK yoU fOr VisiTiNg
